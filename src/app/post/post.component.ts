@@ -3,6 +3,8 @@ import { Post } from '../post.model';
 import { PostService } from '../post.service';
 import { Router } from '@angular/router';
 
+
+
 @Component({
   selector: 'app-post',
   templateUrl: './post.component.html',
@@ -10,8 +12,9 @@ import { Router } from '@angular/router';
 })
 export class PostComponent implements OnInit {
 
+
   memberName = "Lan";
-  constructor(private postService: PostService, private router: Router) {
+  constructor(private postService: PostService, private router: Router,) {
   }
   @Input() index: number = 0;
   @Input() post?: Post;
@@ -21,7 +24,7 @@ export class PostComponent implements OnInit {
     console.log(this.post);
     this.comments = this.postService.getComments(this.index);
   }
-  delete() {
+  del(): void {
     this.postService.deleteButton(this.index);
   }
   onEdit() {

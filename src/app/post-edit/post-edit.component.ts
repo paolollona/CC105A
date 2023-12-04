@@ -3,6 +3,7 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { PostService } from '../post.service';
 import { Post } from '../post.model';
 import { Router, ActivatedRoute, Params } from '@angular/router';
+import { BackEndService } from '../back-end.service';
 @Component({
   selector: 'app-post-edit',
   templateUrl: './post-edit.component.html',
@@ -12,7 +13,7 @@ export class PostEditComponent implements OnInit {
   index: number = 0;
   form!: FormGroup;
   editMode = false;
-  constructor(private postService: PostService, private router: Router,
+  constructor(private postService: PostService, private backEndService: BackEndService, private router: Router,
     private actRoute: ActivatedRoute) { }
   ngOnInit(): void {
     let title = '';
@@ -20,6 +21,7 @@ export class PostEditComponent implements OnInit {
     let description = '';
     this.actRoute.params.subscribe((params: Params) => {
       if (params['index']) {
+        this.index = +params['index'];
         console.log(params['index'])
 
         const postSpec = this.postService.getSpecPost(this.index);
@@ -41,7 +43,7 @@ export class PostEditComponent implements OnInit {
     const imgPath = this.form.value.imgPath;
     const description = this.form.value.description;
     const post: Post = new Post(
-      title, imgPath, description, 'reilanreilan', new Date(), 0
+      title, imgPath, description, 'paolo', new Date(), 0
     );
     if (this.editMode == true) {
       this.postService.updatePost(this.index, post);
@@ -49,7 +51,10 @@ export class PostEditComponent implements OnInit {
     else {
       //submit
       this.postService.addPost(post);
+    
     }
+      this.backEndService.saveData();
+    
     this.router.navigate(['post-list'])
   }
 }

@@ -1,8 +1,10 @@
 import { EventEmitter, Injectable } from "@angular/core";
 import { Post } from "./post.model";
+import { HttpClient } from "@angular/common/http";
 
 @Injectable({ providedIn: 'root' })
 export class PostService {
+  constructor(private http:HttpClient){}
   listChangedEvent: EventEmitter<Post[]> = new EventEmitter();
   listOfPosts: Post[] = [
     /*
@@ -33,7 +35,13 @@ export class PostService {
     return this.listOfPosts;
   }
   deleteButton(index: number) {
-    this.listOfPosts.splice(index, 1)
+    this.http.delete('https://angular-6a4a8-default-rtdb.asia-southeast1.firebasedatabase.app//${index}.json').subscribe(() => {
+      console.log('Post deleted from Firebase');
+    this.listOfPosts.splice(index, 1);
+    
+   
+   });
+  
   }
   addPost(post: Post) {
     this.listOfPosts.push(post);
@@ -46,10 +54,21 @@ export class PostService {
   }
   likePost(index: number) {
     this.listOfPosts[index].numberOfLikes++;
+    const url = `https://angular-6a4a8-default-rtdb.asia-southeast1.firebasedatabase.app/posts/${index}.json`;
+    this.http.patch(url, { numberOfLikes: this.listOfPosts[index].numberOfLikes })
+      .subscribe(() => {
+        console.log('Likes updated in Firebase');
+      });
+  
   }
   addComment(index: number, comment: string) {
     this.listOfPosts[index].comments.push(comment);
-    // You might want to update the post on the server here
+    const url = `https://angular-6a4a8-default-rtdb.asia-southeast1.firebasedatabase.app/posts/${index}.json`;
+    this.http.patch(url, { comments: this.listOfPosts[index].comments })
+      .subscribe(() => {
+        console.log('Comment added in Firebase');
+      });
+  
   }
   getComments(index: number) {
     return this.listOfPosts[index].comments;
